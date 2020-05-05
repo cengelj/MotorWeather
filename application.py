@@ -17,7 +17,7 @@ def main():
                                      "\n3. Query 3"
                                      "\n4. Query 4"
                                      "\n5. Query 5"
-                                     "Please select an option, or enter 0 to exit:")
+                                     "\nPlease select an option, or enter 0 to exit:")
         # ---Error Checking for input--- #
         # Handle non integer input
         if type(user_query_selection) != int:
