@@ -32,13 +32,13 @@ def main():
         # ---Translate Input Into Running The Query--- #
         if user_query_selection == 1:
             print("Run Query 1")
-        if user_query_selection == 2:
+        elif user_query_selection == 2:
             print("Run Query 2")
-        if user_query_selection == 3:
+        elif user_query_selection == 3:
             print("Run Query 3")
-        if user_query_selection == 4:
+        elif user_query_selection == 4:
             print("Run Query 4")
-        if user_query_selection == 5:
+        elif user_query_selection == 5:
             print("Run Query 5")
 
 
