@@ -2,42 +2,36 @@
 
 -- Avoid duplicates when loading data into tables
 DROP TABLE IF EXISTS Weather CASCADE;
-DROP TABLE IF EXISTS Wind CASCADE;
-DROP TABLE IF EXISTS Precipitation CASCADE;
-DROP TABLE IF EXISTS Temperature CASCADE;
-DROP TABLE IF EXISTS Wtype CASCADE;
-
-CREATE TABLE Weather
-(
+CREATE TABLE Weather (
     station VARCHAR(15),
     "date" DATE PRIMARY KEY
 );
 
-CREATE TABLE Wind
-(
+DROP TABLE IF EXISTS Wind CASCADE;
+CREATE TABLE Wind (
     "date" DATE REFERENCES Weather,
-    avgwind NUMERIC(3,2)
+    avgwind NUMERIC(4,2)
 );
 
-CREATE TABLE Precipitation
-(
+DROP TABLE IF EXISTS Precipitation CASCADE;
+CREATE TABLE Precipitation (
     "date" DATE REFERENCES Weather,
     precip NUMERIC(4,2),
     snow NUMERIC(4,2),
     snowdepth NUMERIC(4,2)
 );
 
-CREATE TABLE Temperature
-(
+DROP TABLE IF EXISTS Temperature CASCADE;
+CREATE TABLE Temperature (
     "date" DATE REFERENCES Weather,
     maxtemp SMALLINT,
     mintemp SMALLINT
 );
 
--- Some weather types ommitted due to never occuring in NYC (I.E volcanic ash)
-CREATE TABLE Wtypes
-(
+DROP TABLE IF EXISTS Wtypes CASCADE;
+CREATE TABLE Wtypes (
     "date" DATE REFERENCES Weather,
+    -- Some weather types ommitted due to never occuring in NYC (I.E volcanic ash)
     WT01 BOOLEAN,
     WT02 BOOLEAN,
     WT03 BOOLEAN,
@@ -53,31 +47,26 @@ CREATE TABLE Wtypes
     WT22 BOOLEAN
 );
 
--- CREATE TABLE Typecode
---(
---    code VARCHAR(7) PRIMARY KEY,
---    meaning VARCHAR(127)
---);
+/*
+DROP TABLE IF EXISTS Typecode CASCADE;
+CREATE TABLE Typecode (
+   code VARCHAR(7) PRIMARY KEY,
+   meaning VARCHAR(127)
+);
+*/
 
 
 
 -- Collision Tables
 
 DROP TABLE IF EXISTS Crash CASCADE;
-DROP TABLE IF EXISTS Location CASCADE;
-DROP TABLE IF EXISTS Injuries CASCADE;
-DROP TABLE IF EXISTS Deaths CASCADE;
-DROP TABLE IF EXISTS VehiclesFactors CASCADE;
-
-CREATE TABLE Crash
-(
+CREATE TABLE Crash (
     id VARCHAR(15) PRIMARY KEY,
-    "date" DATE,
-    time TIMESTAMP
+    "datetime" TIMESTAMP WITHOUT TIME ZONE
 );
 
-CREATE TABLE Location
-(
+DROP TABLE IF EXISTS Location CASCADE;
+CREATE TABLE Location (
     id VARCHAR(15) REFERENCES Crash,
     borough VARCHAR(31),
     zip VARCHAR(7),
@@ -88,8 +77,8 @@ CREATE TABLE Location
     off_st VARCHAR(63)
 );
 
-CREATE TABLE Injuries
-(
+DROP TABLE IF EXISTS Injuries CASCADE;
+CREATE TABLE Injuries (
     id VARCHAR(15) REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
@@ -97,8 +86,8 @@ CREATE TABLE Injuries
     motorists SMALLINT
 );
 
-CREATE TABLE Deaths
-(
+DROP TABLE IF EXISTS Deaths CASCADE;
+CREATE TABLE Deaths (
     id VARCHAR(15) REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
@@ -106,8 +95,8 @@ CREATE TABLE Deaths
     motorists SMALLINT
 );
 
-CREATE TABLE VehiclesFactors
-(
+DROP TABLE IF EXISTS VehiclesFactors CASCADE;
+CREATE TABLE VehiclesFactors (
     id VARCHAR(15) REFERENCES Crash,
     type_vehicle1 VARCHAR(63),
     type_vehicle2 VARCHAR(63),
