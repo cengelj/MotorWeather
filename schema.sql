@@ -15,13 +15,13 @@ CREATE TABLE Weather
 
 CREATE TABLE Wind
 (
-    "date" DATE PRIMARY KEY REFERENCES Weather,
+    "date" DATE REFERENCES Weather,
     avgwind NUMERIC(3,2)
 );
 
 CREATE TABLE Precipitation
 (
-    "date" DATE PRIMARY KEY REFERENCES Weather,
+    "date" DATE REFERENCES Weather,
     precip NUMERIC(4,2),
     snow NUMERIC(4,2),
     snowdepth NUMERIC(4,2)
@@ -29,7 +29,7 @@ CREATE TABLE Precipitation
 
 CREATE TABLE Temperature
 (
-    "date" DATE PRIMARY KEY REFERENCES Weather,
+    "date" DATE REFERENCES Weather,
     maxtemp SMALLINT,
     mintemp SMALLINT
 );
@@ -37,7 +37,7 @@ CREATE TABLE Temperature
 -- Some weather types ommitted due to never occuring in NYC (I.E volcanic ash)
 CREATE TABLE Wtypes
 (
-    "date" DATE PRIMARY KEY REFERENCES Weather,
+    "date" DATE REFERENCES Weather,
     WT01 BOOLEAN,
     WT02 BOOLEAN,
     WT03 BOOLEAN,
@@ -78,12 +78,11 @@ CREATE TABLE Crash
 
 CREATE TABLE Location
 (
-    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
+    id VARCHAR(15) REFERENCES Crash,
     borough VARCHAR(31),
     zip VARCHAR(7),
     latitude NUMERIC(9,6),
     longitude NUMERIC(9,6),
-    location POINT,
     on_st VARCHAR(63),
     cross_st VARCHAR(63),
     off_st VARCHAR(63)
@@ -91,7 +90,7 @@ CREATE TABLE Location
 
 CREATE TABLE Injuries
 (
-    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
+    id VARCHAR(15) REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
     cyclists SMALLINT,
@@ -100,7 +99,7 @@ CREATE TABLE Injuries
 
 CREATE TABLE Deaths
 (
-    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
+    id VARCHAR(15) REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
     cyclists SMALLINT,
@@ -109,7 +108,7 @@ CREATE TABLE Deaths
 
 CREATE TABLE VehiclesFactors
 (
-    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
+    id VARCHAR(15) REFERENCES Crash,
     type_vehicle1 VARCHAR(63),
     type_vehicle2 VARCHAR(63),
     type_vehicle3 VARCHAR(63),
