@@ -11,19 +11,17 @@ CREATE TABLE Weather
 (
     station VARCHAR(15),
     "date" DATE PRIMARY KEY
-    -- TSUN doesnt have any information
 );
 
 CREATE TABLE Wind
 (
-    "date" DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     avgwind NUMERIC(3,2)
-    -- peakgusttime never has information
 );
 
 CREATE TABLE Precipitation
 (
-    "date" DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     precip NUMERIC(4,2),
     snow NUMERIC(4,2),
     snowdepth NUMERIC(4,2)
@@ -31,17 +29,35 @@ CREATE TABLE Precipitation
 
 CREATE TABLE Temperature
 (
-    "date" DATE REFERENCES Weather,
-    -- avgtemp never has any information
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     maxtemp SMALLINT,
     mintemp SMALLINT
 );
 
-CREATE TABLE Wtype
+-- Some weather types ommitted due to never occuring in NYC (I.E volcanic ash)
+CREATE TABLE Wtypes
 (
-    code VARCHAR(7) PRIMARY KEY,
-    meaning VARCHAR(127)
+    "date" DATE PRIMARY KEY REFERENCES Weather,
+    WT01 BOOLEAN,
+    WT02 BOOLEAN,
+    WT03 BOOLEAN,
+    WT04 BOOLEAN,
+    WT06 BOOLEAN,
+    WT08 BOOLEAN,
+    WT11 BOOLEAN,
+    WT13 BOOLEAN,
+    WT14 BOOLEAN,
+    WT16 BOOLEAN,
+    WT18 BOOLEAN,
+    WT19 BOOLEAN,
+    WT22 BOOLEAN
 );
+
+-- CREATE TABLE Typecode
+--(
+--    code VARCHAR(7) PRIMARY KEY,
+--    meaning VARCHAR(127)
+--);
 
 
 
@@ -62,7 +78,7 @@ CREATE TABLE Crash
 
 CREATE TABLE Location
 (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     borough VARCHAR(31),
     zip VARCHAR(7),
     latitude NUMERIC(9,6),
@@ -75,7 +91,7 @@ CREATE TABLE Location
 
 CREATE TABLE Injuries
 (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
     cyclists SMALLINT,
@@ -84,7 +100,7 @@ CREATE TABLE Injuries
 
 CREATE TABLE Deaths
 (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
     cyclists SMALLINT,
@@ -93,7 +109,7 @@ CREATE TABLE Deaths
 
 CREATE TABLE VehiclesFactors
 (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     type_vehicle1 VARCHAR(63),
     type_vehicle2 VARCHAR(63),
     type_vehicle3 VARCHAR(63),
