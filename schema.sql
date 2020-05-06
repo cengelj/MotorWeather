@@ -71,9 +71,9 @@ DROP TABLE IF EXISTS VehiclesFactors CASCADE;
 
 CREATE TABLE Crash
 (
-    "date" DATE PRIMARY KEY,
-    time TIMESTAMP,
-    id VARCHAR(15)
+    id VARCHAR(15) PRIMARY KEY,
+    "date" DATE,
+    time TIMESTAMP
 );
 
 CREATE TABLE Location
