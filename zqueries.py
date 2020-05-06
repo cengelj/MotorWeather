@@ -39,8 +39,8 @@ codevalues = execute_query(query2, date)
 codeinfo = list(zip(codes, codevalues))
 
 
-print("High Temperature ... {}", results[0])
-print("Low Temperature .... {}", results[1])
+print("High Temperature (F) {}", results[0])
+print("Low Temperature  (F) {}", results[1])
 print("Total precipitation  {}", results[2])
 print("Total snow ......... {}", results[3])
 print("Snow depth ......... {}", results[4])
