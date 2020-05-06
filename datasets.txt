@@ -1,1 +1,2 @@
-https://data.ny.gov/api/views/3cij-nwhw/rows.csv?accessType=DOWNLOAD&sorting=true
+https://drive.google.com/uc?export=download&id=10CCG5CnbX3O_xHcz0q8urVOyhSoKST8U
+https://data.cityofnewyork.us/api/views/h9gi-nx95/rows.csv?accessType=DOWNLOAD

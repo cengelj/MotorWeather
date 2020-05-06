@@ -1,22 +1,27 @@
 -- Weather Tables
 
+-- Avoid duplicates when loading data into tables
+DROP TABLE IF EXISTS Weather CASCADE;
+DROP TABLE IF EXISTS Wind CASCADE;
+DROP TABLE IF EXISTS Precipitation CASCADE;
+DROP TABLE IF EXISTS Temperature CASCADE;
+DROP TABLE IF EXISTS Wtype CASCADE;
+
 CREATE TABLE Weather
 (
     station VARCHAR(15),
-    date DATE PRIMARY KEY
-    -- TSUN doesnt have any information
+    "date" DATE PRIMARY KEY
 );
 
 CREATE TABLE Wind
 (
-    date DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     avgwind NUMERIC(3,2)
-    -- peakgusttime never has information
 );
 
 CREATE TABLE Precipitation
 (
-    date DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     precip NUMERIC(4,2),
     snow NUMERIC(4,2),
     snowdepth NUMERIC(4,2)
@@ -24,60 +29,87 @@ CREATE TABLE Precipitation
 
 CREATE TABLE Temperature
 (
-    date DATE REFERENCES Weather,
-    -- avgtemp never has any information
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     maxtemp SMALLINT,
     mintemp SMALLINT
 );
 
-CREATE TABLE Wtype
+-- Some weather types ommitted due to never occuring in NYC (I.E volcanic ash)
+CREATE TABLE Wtypes
 (
-    code VARCHAR(7),
-    meaning VARCHAR(127)
+    "date" DATE PRIMARY KEY REFERENCES Weather,
+    WT01 BOOLEAN,
+    WT02 BOOLEAN,
+    WT03 BOOLEAN,
+    WT04 BOOLEAN,
+    WT06 BOOLEAN,
+    WT08 BOOLEAN,
+    WT11 BOOLEAN,
+    WT13 BOOLEAN,
+    WT14 BOOLEAN,
+    WT16 BOOLEAN,
+    WT18 BOOLEAN,
+    WT19 BOOLEAN,
+    WT22 BOOLEAN
 );
 
+-- CREATE TABLE Typecode
+--(
+--    code VARCHAR(7) PRIMARY KEY,
+--    meaning VARCHAR(127)
+--);
 
 
 
 -- Collision Tables
 
+DROP TABLE IF EXISTS Crash CASCADE;
+DROP TABLE IF EXISTS Location CASCADE;
+DROP TABLE IF EXISTS Injuries CASCADE;
+DROP TABLE IF EXISTS Deaths CASCADE;
+DROP TABLE IF EXISTS VehiclesFactors CASCADE;
+
 CREATE TABLE Crash
 (
-    date DATE PRIMARY KEY,
-    time TIMESTAMP,
-    id VARCHAR(31) -- NOT SURE ABOUT TYPE HERE
+    id VARCHAR(15) PRIMARY KEY,
+    "date" DATE,
+    time TIMESTAMP
 );
 
 CREATE TABLE Location
 (
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     borough VARCHAR(31),
     zip VARCHAR(7),
     latitude NUMERIC(9,6),
     longitude NUMERIC(9,6),
     location POINT,
-    on_st VARCHAR(64),
-    cross_st VARCHAR(64),
-    off_st VARCHAR(64)
+    on_st VARCHAR(63),
+    cross_st VARCHAR(63),
+    off_st VARCHAR(63)
 );
 
 CREATE TABLE Injuries
 (
-    num_injured SMALLINT,
-    ped_injured SMALLINT,
-    cyc_injured SMALLINT,
-    mot_injured SMALLINT
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
+    total SMALLINT,
+    pedestrians SMALLINT,
+    cyclists SMALLINT,
+    motorists SMALLINT
 );
 
 CREATE TABLE Deaths
 (
-    num_killed SMALLINT,
-    ped_killed SMALLINT,    -- Maybe num_pedestrians or something in both Injuries and Deaths
-    cyc_killed SMALLINT,
-    mot_killed SMALLINT
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
+    total SMALLINT,
+    pedestrians SMALLINT,
+    cyclists SMALLINT,
+    motorists SMALLINT
 );
 
 CREATE TABLE VehiclesFactors
 (
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     type_vehicle1 VARCHAR(63),
     type_vehicle2 VARCHAR(63),
     type_vehicle3 VARCHAR(63),
