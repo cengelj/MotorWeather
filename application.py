@@ -22,6 +22,7 @@ def printQueryOptions(options):
     for option in options:
         print("{}. {}".format(current, option[0]))
         current += 1
+
     print("\nType quit to stop, or help to list the options again.")
 
 
@@ -31,7 +32,7 @@ def main():
     This should not be run until retrieve_data.py, and load_data.py have been run (in that order)
     :return:null
     """
-    print("\nEnter the number of the query you would like to execute:")
+    print("Enter the number of the query you would like to execute:")
 
     printQueryOptions(query_options)
 
@@ -47,6 +48,7 @@ def main():
 
         if user_query_selection == "quit":
             continue
+        
         try:
             user_query_selection = int(user_query_selection)
         except ValueError:
@@ -59,7 +61,8 @@ def main():
 
         # Execute selected query function
         query_options[user_query_selection - 1][1]()
-        print("\n")
+        print()
+        print()
 
 
 if __name__ == "__main__":
