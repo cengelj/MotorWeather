@@ -34,6 +34,9 @@ def main():
     while (True):
         user_query_selection = input("\nSelection: ")
 
+        if (user_query_selection == "quit"):
+            break
+
         if (type(user_query_selection) != int or user_query_selection < 1 or user_query_selection > len(query_options)-1):
             print("Invalid selection.")
             continue
