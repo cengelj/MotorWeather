@@ -1,4 +1,4 @@
-# CSCI-4380 Final Project Spring 2020
+# CSCI-4380 Final Project - Spring 2020
 
 ## Contributors
 
