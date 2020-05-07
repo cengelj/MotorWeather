@@ -17,7 +17,7 @@ query_options = [
 def print_query_options(options):
     """
     Prints out numbered list of query options
-    options is a list of tuples of the form ("option name", function object)
+    :param options: options is a list of tuples of the form ("option name", function object)
     :return:null
     """
     current = 1
