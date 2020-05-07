@@ -20,6 +20,10 @@ def convert_wtype(wtype: str) -> str:
         return 1
     return 0
 
+def insert_str(table: str, *insertions) -> None:
+    percent_vals = ", ".join(("%s" for i in range(len(insertions))))
+    connection.cursor().execute(f"INSERT INTO {table} VALUES ({percent_vals})", insertions)
+
 
 def import_weather():
     cur = connection.cursor()
@@ -65,7 +69,7 @@ def import_crashes():
             )
 
             cur.execute(
-                "INSERT INTO Location VALUES(%s, %s, %s, %s, %s, %s, %s, %s)", 
+                "INSERT INTO Location VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",
                 (row[23], row[2], row[3], row[4], row[5], row[7], row[8], row[9])
             )
 
@@ -78,8 +82,8 @@ def import_crashes():
             )
 
             cur.execute(
-                "INSERT INTO VehiclesFactors VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
-                (row[23], row[24], row[25], row[26], row[27], row[28], 
+                "INSERT INTO VehiclesFactors VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (row[23], row[24], row[25], row[26], row[27], row[28],
                 row[18], row[19], row[20], row[21], row[22])
             )
     connection.commit()
@@ -88,6 +92,7 @@ def import_crashes():
 def main():
     import_schema()
     import_weather()
+    import_crashes()
 
 
 if __name__ == "__main__":
