@@ -18,14 +18,11 @@ def printQueryOptions(options):
     options is a list of tuples of the form ("option name", function object)
     :return:null
     """
-
-    print()
-
     current = 1
     for option in options:
         print("{}. {}".format(current, option[0]))
         current += 1
-    print()
+    print("\nType quit to stop, or help to list the options again.")
 
 
 def main():
@@ -34,17 +31,15 @@ def main():
     This should not be run until retrieve_data.py, and load_data.py have been run (in that order)
     :return:null
     """
-
     print("\nEnter the number of the query you would like to execute:")
 
     printQueryOptions(query_options)
 
-    print("\nType quit to stop, or help to list the options again.\n")
-
     user_query_selection = ""
 
     while user_query_selection != "quit":
-        user_query_selection = input("\nSelection: ")
+        user_query_selection = input("Selection: ")
+        print()
 
         if user_query_selection == "help":
             printQueryOptions(query_options)
@@ -64,6 +59,7 @@ def main():
 
         # Execute selected query function
         query_options[user_query_selection - 1][1]()
+        print("\n")
 
 
 if __name__ == "__main__":
