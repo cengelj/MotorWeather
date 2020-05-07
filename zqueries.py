@@ -68,12 +68,13 @@ def typesort(t):
 
 query = """
 SELECT COUNT(%s) FROM Wtypes
+WHERE %s = 1
 """
 
 results = []
 
 for typecode in typecodes.keys():
-    typecount = execute_query(query, (typecode))[0]
+    typecount = execute_query(query, (typecode, typecode))[0]
     results.append((typecode, typecount))
 
 results.sort(key=typesort)
