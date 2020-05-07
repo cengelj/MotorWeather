@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # load_data.py
 
-DEBUG = True
+DEBUG = False
 
 from typing import Sequence, Callable, Union, List, Tuple
 from pathlib import Path
@@ -200,7 +200,7 @@ def duration(seconds: float) -> str:
 ##### Read loop functions #####
 
 # Load the given file into memory & perform the given executor function upon each line of it.
-def process_file(data_path: Path, open_flags: int, max_map: int, conn: Connection, cur: Cursor,
+def process_file(data_path: Path, open_flags: int, conn: Connection, cur: Cursor,
         executor: Executor = None, prog_config: Tuple[int, int] = None) -> int:
     # Use os.open instead of the built-in open() to avoid any unnecessary overhead in the creation
     # of a file object.
@@ -208,7 +208,7 @@ def process_file(data_path: Path, open_flags: int, max_map: int, conn: Connectio
     line_count = 0
     data_size = data_path.stat().st_size
     # Use a memory map to reduce the number of I/O operations:
-    with mmap(fd, 0 if data_size < max_map else max_map, access = ACCESS_READ) as mm:
+    with mmap(fd, 0, access = ACCESS_READ) as mm:
         # For schema, just read the whole file at once.
         if executor == None:
             cur.execute(mm.read())
@@ -254,9 +254,9 @@ def process_file(data_path: Path, open_flags: int, max_map: int, conn: Connectio
     return line_count
 
 # Wrapper for processing data files
-def import_routine(data: Union[Path, Sequence[Path]], open_flags: int, max_map: int,
-        conn: Connection, cur: Cursor, executor: Executor, prog_config: Tuple[int, int]) -> int:
-    args = (open_flags, max_map, conn, cur, executor, prog_config)
+def import_routine(data: Union[Path, Sequence[Path]], open_flags: int, conn: Connection,
+        cur: Cursor, executor: Executor, prog_config: Tuple[int, int]) -> int:
+    args = (open_flags, conn, cur, executor, prog_config)
     if isinstance(data, Sequence_class):
         total_line_count = 0
         for d in data:
@@ -290,8 +290,6 @@ def main() -> None:
     # mapping. However, Windows requires the O_BINARY flag for this, whereas POSIX doesn't have it
     # at all.
     open_flags = os.O_RDONLY | os.O_BINARY if hasattr(os, "O_BINARY") else os.O_RDONLY
-    # Maximum size of memory map for reading data, in bytes:
-    max_map = 1024*1024*128 # 128 MB
 
     # Used to safely insert data into tables
     conn = psycopg2.connect("host='localhost' dbname='dbms_final_project' user='dbms_project_user' "
@@ -306,7 +304,7 @@ def main() -> None:
         sys.exit(1)
     print("### Creating schema ###")
     time_start = perf_counter()
-    process_file(schema_file, open_flags, max_map, conn, cur)
+    process_file(schema_file, open_flags, conn, cur)
     time_elapsed = perf_counter() - time_start
     print("### Finished creating schema ###")
     print(f"    (processed in {duration(time_elapsed)})")
@@ -322,8 +320,7 @@ def main() -> None:
         sys.exit(1)
     print("### Importing weather data ###")
     time_start = perf_counter()
-    line_count = import_routine(weather_data, open_flags, max_map, conn, cur, insert_weather_line,
-        (32, 0))
+    line_count = import_routine(weather_data, open_flags, conn, cur, insert_weather_line, (32, 0))
     time_elapsed = perf_counter() - time_start
     print("### Finished importing weather data ###")
     print(f"    (processed {line_count} lines in {duration(time_elapsed)})")
@@ -337,8 +334,8 @@ def main() -> None:
         sys.exit(1)
     print("### Importing collision data ###")
     time_start = perf_counter()
-    line_count = import_routine(collision_data, open_flags, max_map, conn, cur,
-        insert_collision_line, (48, 2))
+    line_count = import_routine(collision_data, open_flags, conn, cur, insert_collision_line,
+        (48, 2))
     time_elapsed = perf_counter() - time_start
     print("### Finished importing collision data ###")
     print(f"    (processed {line_count} lines in {duration(time_elapsed)})")
