@@ -9,7 +9,7 @@ Giri Srinivasan
 
 ## Datasets Used
 
-[New York City weather station data](https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00094728/detail) from NOAA  
+[NYC Central Park weather station data](https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00094728/detail) from NOAA. We are hosting it [here](https://docs.google.com/spreadsheets/d/11eMgzRgRE0GZLjj5rk0IDqu8fHr3uwVAySXCubIZ5nA/edit?usp=sharing) on Google Drive.
 [Motor vehicle collisions data](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) from NYC OpenData
 
 ## Installation Instructions
@@ -36,5 +36,16 @@ _**Note:** This step could take approximately 30 minutes._
 
 After the database is populated, start the application by running `python application.py`.
 
-## Usage
+## Available Queries
 
+**- Crashes by Date:** Displays the number of car crashes on the user-selected date.  
+**- Weather by Date:** Deather details from the user-selected date.  
+**- Most Common Weather:** Displays a ranked list (descending) of the most common weather conditions.  
+**- Most Crashed-In Weather:** Displays a ranked list (descending) of the most crashed-in weather conditions.  
+**- Deadliest Weather:** Displays a ranked list (descending) of the deadliest weather conditions.  
+**- Most Injurious Weather:** Displays a ranked list (descending) of the most injurious weather conditions.  
+**- Crashes by Borough:** Displays a ranked list (descending) of NYC boroughs by crash frequency.
+
+## Project Video
+
+A video of the application in use can be found [here](https://drive.google.com/open?id=16hF0sEipgBjYm-AbRPB1d_qn-TbbSuci).
