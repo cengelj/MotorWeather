@@ -16,22 +16,25 @@ Giri Srinivasan
 
 _Running this software requires [python 3.8+](https://www.python.org/downloads/release/python-382/) and [Postgres 12](https://www.postgresql.org/download/)_
 
-We recommend the use of a python virtual environment. Documentation for that can be found [here](https://docs.python.org/3/library/venv.html)
+We recommend the use of a python virtual environment. Documentation for that can be found [here](https://docs.python.org/3/library/venv.html).
 
 After creating your virtual environment, install the dependencies by running
 ```bash
 pip install -r requirements.txt
 ```
 
-To initialize the database, run the following in your command line:
+To initialize the database, run the following from the parent directory:
 
 ```bash
 psql -U postgres postgres < db-setup.sql
 ```
 
-After creating the database, navigate to the topmost project directory and run `python retrieve_data.py` to load the datasets from the internet.
+After creating the database, run `python retrieve_data.py` to load the datasets from the internet.
 
-Once the datasets are loaded, run `python load_data.py` to populate the database.  
+Once the datasets are loaded, enter the directory called `code` and run `python load_data.py` to populate the database.  
 _**Note:** This step could take approximately 30 minutes._
 
 After the database is populated, start the application by running `python application.py`.
+
+## Usage
+
