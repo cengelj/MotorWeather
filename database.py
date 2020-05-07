@@ -42,6 +42,12 @@ class Database:
 
 
     def format_weather_type_result(self, result):
+        """
+        Formats the result of a query dealing with weather types in a way that can be handled by
+        print_formatted_weather_ranking()
+        :param result: the result of the query to be formatted
+        :return: the formatted result
+        """
         formatted_result = []
         for weather_index in range(len(result[1][0])):
             formatted_result.append([result[0][weather_index][0], result[1][0][weather_index]])
@@ -51,6 +57,12 @@ class Database:
 
 
     def print_formatted_weather_ranking(self, result, describing_noun):
+        """
+        Prints the ranking of weather conditions in a reusable code chunk
+        :param result: The results of the queries (formatted by format_weather_type_result)
+        :param describing_noun: The trailing noun describing the data
+        :return: None
+        """
         current_rank = 1
         for weather_type in result:
             print("{} {}: {} {}".format("{}.".format(current_rank) if current_rank >= 10 else "{}. ".format(current_rank),
@@ -118,6 +130,7 @@ class Database:
         # Format result in a form that can be easily sorted
         formatted_result = self.format_weather_type_result(result)
 
+        # Print result
         print("Most common weather conditions (descending):")
         self.print_formatted_weather_ranking(formatted_result, "occurrence(s)")
 
@@ -155,6 +168,11 @@ class Database:
         self.print_formatted_weather_ranking(formatted_result, "crash(es)")
 
     def select_group(self, flag):
+        """
+        Reusable code to prompt the user to select a kind of group
+        :param flag: The set of word(s) describing the type of incident
+        :return: the selected group
+        """
         print("{} for which group?\n".format(flag))
         groups = ["Total", "Pedestrians", "Cyclists", "Motorists"]
         current_number = 1
@@ -231,3 +249,14 @@ class Database:
         print("Most injured in Weather Conditions ({}, Descending):".format(group_selection))
         self.print_formatted_weather_ranking(formatted_result, "injury(s)")
 
+    def crashes_by_borough(self):
+        query = """
+        SELECT l0.borough, COUNT(c0.id)
+        FROM Crash c0, Location l0
+        WHERE c0.id=l0.id
+        GROUP BY l0.borough;
+        """
+        results = self.execute_query(query, ())
+
+        for result in results[1]:
+            print("{}: {}".format(result[0] if result[0] != "" else "No Borough", result[1]))
