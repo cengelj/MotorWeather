@@ -3,20 +3,16 @@
 
 DEBUG = True
 
-
-
 from typing import Sequence, Callable, Union, List, Tuple
 from pathlib import Path
 import sys
 import os
+from time import perf_counter
 import psycopg2
 from mmap import mmap, ACCESS_READ
 from collections.abc import Sequence as Sequence_class
 import re
-from datetime import date, datetime
-from decimal import Decimal
-
-
+from math import isfinite
 
 # Type aliases
 Connection = psycopg2.extensions.connection
@@ -27,12 +23,21 @@ Executor = Callable[[List[str], Cursor], None]
 
 ##### Helpers for executors #####
 
-# Helper function for input to the Decimal constructor
-def numeric(val: str) -> Decimal:
-    return Decimal(0 if len(val) == 0 else val)
+def numeric(val: str) -> float:
+    try:
+        out = float(val)
+        return out if isfinite(out) else None
+    except Exception:
+        return None
 
-def db_int(val: str) -> int:
-    return 0 if val == "" else 1
+def integer(val: str) -> int:
+    try:
+        return int(val)
+    except Exception:
+        return None
+
+def wtype(val: str) -> int:
+    return 1 if len(val) != 0 else 0
 
 # Insert values into a PostgreSQL table
 def insert_str(cur: Cursor, table: str, *insertions) -> None:
@@ -60,7 +65,7 @@ def data_length_check(row: List[str], expected_length: int) -> None:
     # one greater than it should be, but whenever you try popping it, it actually pops two
     # items. Why it does this, I do not know, but it seems relatively harmless so.
     assert len(row) == expected_length or len(row) == expected_length + 1 \
-        and row[expected_length] == ""
+        and len(row[expected_length]) == 0
 
 
 
@@ -87,9 +92,11 @@ def progress_bar() -> None:
 
     # Print the bar
     # If this is a reprint, write a carriage return to take us to the beginning of the line.
-    line_start = "" if self.loaded == 1 else "\r"
+    # Since the loading bar printout only ever grows longer, there's no need to use \b.
+    if self.loaded != 1:
+        sys.stdout.write("\r")
     # TWO layers of formatting here:
-    sys.stdout.write(f"{line_start}{{:.{self.precision}f}}% [".format(self.perc))
+    sys.stdout.write(f"{{:.{self.precision}f}}% [".format(self.perc))
     # Fill up the loading bar in proportion to the number of lines that have been loaded.
     for i in range(self.fill):
         sys.stdout.write("=")
@@ -123,38 +130,39 @@ def init_progress_bar(total: int, length: int, precision: int = 0) -> None:
 def insert_weather_line(row: List[str], cur: Cursor) -> None:
     data_length_check(row, 24)
 
-    # Parse date first, since the resulting date object will be reused several times
-    w_date = date.fromisoformat(row[1])
+    # Save date, since as the primary key it'll be passed to every table. This should already be in
+    # ISO format.
+    w_date = row[1]
 
     # Actual insertions:
     insert_str(cur, "Weather", row[0], w_date)
     insert_str(cur, "Wind", w_date, numeric(row[2]))
     insert_str(cur, "Precipitation", w_date, numeric(row[4]), numeric(row[5]), numeric(row[6]))
-    insert_str(cur, "Temperature", w_date, int(row[8]), int(row[9]))
-    insert_str(cur, "Wtypes", w_date, db_int(row[11]), db_int(row[12]), db_int(row[13]),
-        db_int(row[14]), db_int(row[15]), db_int(row[16]), db_int(row[17]), db_int(row[18]),
-        db_int(row[19]), db_int(row[20]), db_int(row[21]), db_int(row[22]), db_int(row[23]))
+    insert_str(cur, "Temperature", w_date, integer(row[8]), integer(row[9]))
+    insert_str(cur, "Wtypes", w_date, wtype(row[11]), wtype(row[12]), wtype(row[13]),
+        wtype(row[14]), wtype(row[15]), wtype(row[16]), wtype(row[17]), wtype(row[18]),
+        wtype(row[19]), wtype(row[20]), wtype(row[21]), wtype(row[22]), wtype(row[23]))
 
 def insert_collision_line(row: List[str], cur: Cursor) -> None:
     data_length_check(row, 29)
 
     # Save ID since it'll be reused several times
     id_col = row[23]
+    # Restructure date string to match ISO format
+    date_match = re.fullmatch(r"(\d\d)/(\d\d)/(\d{4})", row[0])
+    c_date = "-".join((date_match.group(3), date_match.group(1), date_match.group(2))) \
+        if date_match else row[0]
+    # Zero-pad the time if necessary
+    c_time = row[1] if len(row[1]) == 5 else "".join(("0", row[1]))
 
     # Actual insertions:
-    # Zero-pad the time if necessary (otherwise the format string passed to strptime won't work)
-    if len(row[1]) == 4:
-        row[1] = "".join(("0", row[1]))
-    # Creating a combined datetime object is seemingly the only way to obtain date & time objects
-    # from a non-ISO-formatted string.
-    crash_datetime = datetime.strptime(" ".join((row[0], row[1])), "%m/%d/%Y %H:%M")
-    insert_str(cur, "Crash", id_col, crash_datetime.date(), crash_datetime.time())
+    insert_str(cur, "Crash", id_col, c_date, c_time)
     insert_str(cur, "Location", id_col, row[2], row[3], numeric(row[4]), numeric(row[5]), row[7],
         row[8], row[9])
-    insert_str(cur, "Injuries", id_col, db_int(row[10]), db_int(row[12]), db_int(row[14]),
-        db_int(row[16]))
-    insert_str(cur, "Deaths", id_col, db_int(row[11]), db_int(row[13]), db_int(row[15]),
-        db_int(row[17]))
+    insert_str(cur, "Injuries", id_col, integer(row[10]), integer(row[12]), integer(row[14]),
+        integer(row[16]))
+    insert_str(cur, "Deaths", id_col, integer(row[11]), integer(row[13]), integer(row[15]),
+        integer(row[17]))
     insert_str(cur, "VehiclesFactors", id_col, row[24], row[25], row[26], row[27], row[28], row[18],
         row[19], row[20], row[21], row[22])
 
@@ -162,8 +170,8 @@ def insert_collision_line(row: List[str], cur: Cursor) -> None:
 
 ##### Helpers for read loop #####
 
-def line_count(mm: mmap) -> int:
-    position = 0
+def estimated_line_count(mm: mmap, start_position: int = 0) -> int:
+    position = start_position
     count = 1
     # ":=" operator only available in Python 3.8
     while (new_position := mm.find(b"\n", position)) != -1:
@@ -171,8 +179,21 @@ def line_count(mm: mmap) -> int:
         position = new_position + 1
     # Don't count an empty line at the end of the file
     if position == mm.size():
-        count -= 1
+        count = max(0, count - 1)
     return count
+
+# Converts seconds to formatted ?h?m?s string, removing h and m if they're 0
+def duration(seconds: float) -> str:
+    minutes = 0
+    while seconds > 60:
+        seconds -= 60
+        minutes += 1
+    hours = 0
+    while minutes > 60:
+        minutes -= 60
+        hours += 1
+    return f"{{}}{{}}{seconds:.3f}s".format(f"{hours}h" if hours != 0 else "",
+        f"{minutes}m" if minutes != 0 else "")
 
 
 
@@ -180,10 +201,11 @@ def line_count(mm: mmap) -> int:
 
 # Load the given file into memory & perform the given executor function upon each line of it.
 def process_file(data_path: Path, open_flags: int, max_map: int, conn: Connection, cur: Cursor,
-        executor: Executor = None, prog_config: Tuple[int, int] = None) -> None:
+        executor: Executor = None, prog_config: Tuple[int, int] = None) -> int:
     # Use os.open instead of the built-in open() to avoid any unnecessary overhead in the creation
     # of a file object.
     fd = os.open(data_path, open_flags)
+    line_count = 0
     data_size = data_path.stat().st_size
     # Use a memory map to reduce the number of I/O operations:
     with mmap(fd, 0 if data_size < max_map else max_map, access = ACCESS_READ) as mm:
@@ -192,47 +214,69 @@ def process_file(data_path: Path, open_flags: int, max_map: int, conn: Connectio
             cur.execute(mm.read())
         # Otherwise, loop through the given dataset
         else:
-            # Disregard the header row of the given CSV files
+            # Disregard the given CSV file's header row
             mm.seek(mm.find(b"\n") + 1)
-            init_progress_bar(line_count(mm), *prog_config)
+            init_progress_bar(estimated_line_count(mm, mm.tell()), *prog_config)
             # LOOP
             while len(line := mm.readline()) != 0:
-                # Strip any carriage returns due to Windows-style line endings, then convert to
-                # proper encoded text
                 try:
+                    # Strip any carriage returns due to Windows-style line endings, then convert to
+                    # proper encoded text
                     row = csv_split(line.rstrip(b"\r").decode())
                     executor(row, cur)
-                except Exception as e:
-                    row_length_error = type(e).__name__ == "AssertionError"
-                    if row_length_error:
-                        # TO DO: If the row length is less than expected, save the row & try to
-                        # splice it with the next one.
-                        # For now, just don't insert it, and continue the loop without raising the
-                        # exception.
-                        continue
-                    if DEBUG:
-                        print("\n<DEBUG>", file = sys.stderr)
-                        for c in range(len(row)):
-                            print(f"  row[{c}]: \"{row[c]}\"", file = sys.stderr)
-                        print(f"  Length: {len(row)}", file = sys.stderr)
-                # Reprint progress bar over itself
-                progress_bar()
+                    line_count += 1
+                    # Reprint progress bar over itself
+                    progress_bar()
+                except BaseException as e:
+                    # We need to make a distinction between actual exceptions (class Exception) and
+                    # any cause of unnatural of program termination, e.g. the user pressing CTRL+C
+                    # (class BaseException).
+                    if isinstance(e, Exception):
+                        if isinstance(e, AssertionError):
+                            # TO DO: If the row length is less than expected, save the row & try to
+                            # splice it with the next one.
+                            # For now, just don't insert it, and continue the loop without raising
+                            # the exception.
+                            pass
+                        else:
+                            if DEBUG:
+                                print("\n<DEBUG>Row contents:", file = sys.stderr)
+                                for c in range(len(row)):
+                                    print
+                                    print(f"  [{c}]: \"{row[c]}\"", file = sys.stderr)
+                                print(f"  Length: {len(row)}", file = sys.stderr)
+                            raise e
+                    else:
+                        sys.exit(1)
             print() # Newline to get us past the progress bar
     os.close(fd)
-
     conn.commit()
+    return line_count
 
 # Wrapper for processing data files
 def import_routine(data: Union[Path, Sequence[Path]], open_flags: int, max_map: int,
-        conn: Connection, cur: Cursor, executor: Executor, prog_config: Tuple[int, int]) -> None:
+        conn: Connection, cur: Cursor, executor: Executor, prog_config: Tuple[int, int]) -> int:
     args = (open_flags, max_map, conn, cur, executor, prog_config)
     if isinstance(data, Sequence_class):
+        total_line_count = 0
         for d in data:
-            print(f"Parsing \"{str(d)}\"")
-            process_file(d, *args)
+            data_name = str(d)
+            print(f"+++ Parsing \"{data_name}\" +++")
+            time_start = perf_counter()
+            line_count = process_file(d, *args)
+            time_elapsed = perf_counter() - time_start
+            total_line_count += line_count
+            print(f"+++ Finished parsing \"{data_name}\" +++")
+            print(f"    (processed {line_count} lines in {duration(time_elapsed)})")
+        return total_line_count
     else:
-        print(f"Parsing \"{str(data)}\"")
-        process_file(data, *args)
+        data_name = str(data)
+        print(f"+++ Parsing \"{data_name}\" +++")
+        time_start = perf_counter()
+        line_count = process_file(data, *args)
+        time_elapsed = perf_counter() - time_start
+        print(f"+++ Finished parsing \"{data_name}\" +++")
+        return line_count
 
 
 
@@ -260,31 +304,44 @@ def main() -> None:
     if not schema_file.exists():
         print(f"ERROR: Schema file \"{str(schema_file)}\" does not exist!", file = sys.stderr)
         sys.exit(1)
-    print("+++ Creating schema +++")
+    print("### Creating schema ###")
+    time_start = perf_counter()
     process_file(schema_file, open_flags, max_map, conn, cur)
+    time_elapsed = perf_counter() - time_start
     print("### Finished creating schema ###")
+    print(f"    (processed in {duration(time_elapsed)})")
 
     data_dir = this_dir.joinpath("datasets")
 
     ### LOAD WEATHER DATA ###
 
+    print()
     weather_data = data_dir.joinpath("weather.csv")
     if not weather_data.exists():
         print(f"ERROR: Data file \"{str(weather_data)}\" does not exist!", file = sys.stderr)
         sys.exit(1)
-    print("+++ Importing weather data +++")
-    import_routine(weather_data, open_flags, max_map, conn, cur, insert_weather_line, (32, 0))
+    print("### Importing weather data ###")
+    time_start = perf_counter()
+    line_count = import_routine(weather_data, open_flags, max_map, conn, cur, insert_weather_line,
+        (32, 0))
+    time_elapsed = perf_counter() - time_start
     print("### Finished importing weather data ###")
+    print(f"    (processed {line_count} lines in {duration(time_elapsed)})")
 
     ### LOAD COLLISION DATA ###
 
+    print()
     collision_data = data_dir.joinpath("Motor_Vehicle_Collisions_-_Crashes.csv")
     if not weather_data.exists():
         print(f"ERROR: Data file \"{str(collision_data)}\" does not exist!", file = sys.stderr)
         sys.exit(1)
-    print("+++ Importing collision data +++")
-    import_routine(collision_data, open_flags, max_map, conn, cur, insert_collision_line, (48, 2))
+    print("### Importing collision data ###")
+    time_start = perf_counter()
+    line_count = import_routine(collision_data, open_flags, max_map, conn, cur,
+        insert_collision_line, (48, 2))
+    time_elapsed = perf_counter() - time_start
     print("### Finished importing collision data ###")
+    print(f"    (processed {line_count} lines in {duration(time_elapsed)})")
 
 if __name__ == "__main__":
     main()
