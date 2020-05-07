@@ -39,7 +39,7 @@ After the database is populated, start the application by running `python applic
 ## Available Queries
 
 **- Crashes by Date:** Displays the number of car crashes on the user-selected date.  
-**- Weather by Date:** Deather details from the user-selected date.  
+**- Weather by Date:** Displays weather details from the user-selected date.  
 **- Most Common Weather:** Displays a ranked list (descending) of the most common weather conditions.  
 **- Most Crashed-In Weather:** Displays a ranked list (descending) of the most crashed-in weather conditions.  
 **- Deadliest Weather:** Displays a ranked list (descending) of the deadliest weather conditions.  
