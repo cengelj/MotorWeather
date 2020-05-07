@@ -9,7 +9,8 @@ query_options = [
     ("Most common weather", app.most_common_weather),
     ("Most crashed in weather", app.crashes_by_weather),
     ("Deadliest weather", app.deadliest_weather),
-    ("Most Injured In Weather", app.most_injuries_weather)
+    ("Most Injured In Weather", app.most_injuries_weather),
+    ("Crashes By Borough", app.crashes_by_borough)
 ]
 
 
