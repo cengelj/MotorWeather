@@ -113,11 +113,7 @@ class Database:
         result = self.execute_query(query, ())
 
         # Format result in a form that can be easily sorted
-        formatted_result = []
-        for weather_index in range(len(result[1][0])):
-            formatted_result.append([result[0][weather_index][0],result[1][0][weather_index]])
-
-        formatted_result.sort(key=lambda t:t[1], reverse=True)
+        formatted_result = self.format_weather_type_result(result)
 
         print("Most common weather conditions (descending):")
         self.print_formatted_weather_ranking(formatted_result, "occurrence(s)")
