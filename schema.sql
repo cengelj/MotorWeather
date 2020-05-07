@@ -47,12 +47,13 @@ CREATE TABLE Wtypes (
     WT22 SMALLINT
 );
 
---DROP TABLE IF EXISTS Typecode CASCADE;
---CREATE TABLE Typecode (
---   code VARCHAR(7) PRIMARY KEY,
---   meaning VARCHAR(127)
---);
-
+/*
+DROP TABLE IF EXISTS Typecode CASCADE;
+CREATE TABLE Typecode (
+  code VARCHAR(7) PRIMARY KEY,
+  meaning VARCHAR(127)
+);
+*/
 
 
 -- Collision Tables
@@ -60,7 +61,8 @@ CREATE TABLE Wtypes (
 DROP TABLE IF EXISTS Crash CASCADE;
 CREATE TABLE Crash (
     id VARCHAR(15) PRIMARY KEY,
-    "datetime" TIMESTAMP WITHOUT TIME ZONE
+    "date" DATE,
+    "time" TIME
 );
 
 DROP TABLE IF EXISTS Location CASCADE;
@@ -95,7 +97,7 @@ CREATE TABLE Deaths (
 
 DROP TABLE IF EXISTS VehiclesFactors CASCADE;
 CREATE TABLE VehiclesFactors (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     type_vehicle1 VARCHAR(63),
     type_vehicle2 VARCHAR(63),
     type_vehicle3 VARCHAR(63),
