@@ -1,6 +1,24 @@
 import psycopg2
 
 
+typecodes = {
+    "WT01": "Fog, ice fog, or freezing fog (may include heavy fog)",
+    "WT02": "Heavy fog or heavy freezing fog (not always distinguished from fog)",
+    "WT03": "Thunder",
+    "WT04": "Ice pellets, sleet, snow pellets, or small hail",
+    "WT06": "Glaze or rime",
+    "WT08": "Smoke or haze",
+    "WT11": "High or damaging winds",
+    "WT13": "Mist",
+    "WT14": "Drizzle",
+    "WT16": "Rain (may include freezing rain, drizzle, and freezing drizzle)",
+    "WT18": "Snow, snow pellets, snow grains, or ice crystals",
+    "WT19": "Unknown source of precipitation",
+    "WT22": "Ice fog or freezing fog"
+}
+
+
+
 class Database:
     """
         Used to connect to the database and run queries on the information within

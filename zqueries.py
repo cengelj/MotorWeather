@@ -14,6 +14,8 @@ typecodes = {
     "WT22": "Ice fog or freezing fog"
 }
 
+
+
 # --------------------------------------------------------------------------
 # WEATHER CONDITIONS ON GIVEN DAY
 # --------------------------------------------------------------------------
@@ -31,9 +33,9 @@ SELECT * FROM Wtypes
 WHERE date = %s
 """
 
-results = execute_query(query, date)
+columns, results = execute_query(query, date)
 # NEED ACCESS TO CURSOR TO GET COLUMN NAMES
-codes = [desc[0] for desc in cursor.description]
+codes = [desc[0] for desc in columns]
 codevalues = execute_query(query2, date)
 
 codeinfo = list(zip(codes, codevalues))
@@ -66,12 +68,13 @@ def typesort(t):
 
 query = """
 SELECT COUNT(%s) FROM Wtypes
+WHERE %s = 1
 """
 
 results = []
 
 for typecode in typecodes.keys():
-    typecount = execute_query(query, (typecode))[0]
+    typecount = execute_query(query, (typecode, typecode))[0]
     results.append((typecode, typecount))
 
 results.sort(key=typesort)

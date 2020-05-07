@@ -9,13 +9,13 @@ CREATE TABLE Weather (
 
 DROP TABLE IF EXISTS Wind CASCADE;
 CREATE TABLE Wind (
-    "date" DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     avgwind NUMERIC(4,2)
 );
 
 DROP TABLE IF EXISTS Precipitation CASCADE;
 CREATE TABLE Precipitation (
-    "date" DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     precip NUMERIC(4,2),
     snow NUMERIC(4,2),
     snowdepth NUMERIC(4,2)
@@ -23,37 +23,35 @@ CREATE TABLE Precipitation (
 
 DROP TABLE IF EXISTS Temperature CASCADE;
 CREATE TABLE Temperature (
-    "date" DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     maxtemp SMALLINT,
     mintemp SMALLINT
 );
 
 DROP TABLE IF EXISTS Wtypes CASCADE;
 CREATE TABLE Wtypes (
-    "date" DATE REFERENCES Weather,
+    "date" DATE PRIMARY KEY REFERENCES Weather,
     -- Some weather types ommitted due to never occuring in NYC (I.E volcanic ash)
-    WT01 BOOLEAN,
-    WT02 BOOLEAN,
-    WT03 BOOLEAN,
-    WT04 BOOLEAN,
-    WT06 BOOLEAN,
-    WT08 BOOLEAN,
-    WT11 BOOLEAN,
-    WT13 BOOLEAN,
-    WT14 BOOLEAN,
-    WT16 BOOLEAN,
-    WT18 BOOLEAN,
-    WT19 BOOLEAN,
-    WT22 BOOLEAN
+    WT01 SMALLINT,
+    WT02 SMALLINT,
+    WT03 SMALLINT,
+    WT04 SMALLINT,
+    WT06 SMALLINT,
+    WT08 SMALLINT,
+    WT11 SMALLINT,
+    WT13 SMALLINT,
+    WT14 SMALLINT,
+    WT16 SMALLINT,
+    WT18 SMALLINT,
+    WT19 SMALLINT,
+    WT22 SMALLINT
 );
 
-/*
-DROP TABLE IF EXISTS Typecode CASCADE;
-CREATE TABLE Typecode (
-   code VARCHAR(7) PRIMARY KEY,
-   meaning VARCHAR(127)
-);
-*/
+--DROP TABLE IF EXISTS Typecode CASCADE;
+--CREATE TABLE Typecode (
+--   code VARCHAR(7) PRIMARY KEY,
+--   meaning VARCHAR(127)
+--);
 
 
 
@@ -67,7 +65,7 @@ CREATE TABLE Crash (
 
 DROP TABLE IF EXISTS Location CASCADE;
 CREATE TABLE Location (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     borough VARCHAR(31),
     zip VARCHAR(7),
     latitude NUMERIC(9,6),
@@ -79,7 +77,7 @@ CREATE TABLE Location (
 
 DROP TABLE IF EXISTS Injuries CASCADE;
 CREATE TABLE Injuries (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
     cyclists SMALLINT,
@@ -88,7 +86,7 @@ CREATE TABLE Injuries (
 
 DROP TABLE IF EXISTS Deaths CASCADE;
 CREATE TABLE Deaths (
-    id VARCHAR(15) REFERENCES Crash,
+    id VARCHAR(15) PRIMARY KEY REFERENCES Crash,
     total SMALLINT,
     pedestrians SMALLINT,
     cyclists SMALLINT,
