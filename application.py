@@ -1,7 +1,6 @@
 from database import Database
 
-
-app = Database()    # Object to interface with the database
+app = Database()  # Object to interface with the database
 
 # List of query options and their corresponding function objects
 query_options = [
@@ -29,7 +28,6 @@ def printQueryOptions(options):
     print()
 
 
-
 def main():
     """
     Print options and execute user selections until quit is entered
@@ -45,23 +43,27 @@ def main():
 
     user_query_selection = ""
 
-    while (user_query_selection != "quit"):
+    while user_query_selection != "quit":
         user_query_selection = input("\nSelection: ")
 
-        if (user_query_selection == "help"):
+        if user_query_selection == "help":
             printQueryOptions(query_options)
             continue
 
-        if (user_query_selection == "quit"):
+        if user_query_selection == "quit":
+            continue
+        try:
+            user_query_selection = int(user_query_selection)
+        except ValueError:
+            print("Invalid selection")
             continue
 
-        if (type(user_query_selection) != int or user_query_selection < 1 or user_query_selection > len(query_options)-1):
+        if user_query_selection < 1 or user_query_selection > len(query_options):
             print("Invalid selection.")
             continue
-        
-        # Execute selected query function
-        query_options[user_query_selection-1][1]()
 
+        # Execute selected query function
+        query_options[user_query_selection - 1][1]()
 
 
 if __name__ == "__main__":
