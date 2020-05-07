@@ -9,8 +9,8 @@ Giri Srinivasan
 
 ## Datasets Used
 
-[NYC Central Park weather station data](https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00094728/detail) from NOAA. We are hosting it [here](https://docs.google.com/spreadsheets/d/11eMgzRgRE0GZLjj5rk0IDqu8fHr3uwVAySXCubIZ5nA/edit?usp=sharing) on Google Drive.  
-[Motor vehicle collisions data](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) from NYC OpenData
+- [NYC Central Park weather station data](https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00094728/detail) from NOAA. We are hosting it [here](https://docs.google.com/spreadsheets/d/11eMgzRgRE0GZLjj5rk0IDqu8fHr3uwVAySXCubIZ5nA/edit?usp=sharing) on Google Drive.  
+- [Motor vehicle collisions data](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) from NYC OpenData
 
 ## Installation Instructions
 
