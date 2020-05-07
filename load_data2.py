@@ -28,22 +28,10 @@ def import_weather():
         next(file_reader)  # Skip the header row.
         for row in file_reader:
             # insert into Weather
-            print(row)
-            cur.execute(
-                "INSERT INTO Weather VALUES (%s, %s)", (row[0], row[1])
-            )
-            # wind
-            cur.execute(
-                "INSERT INTO Wind VALUES (%s, %s)", (row[1], row[2])
-            )
-            # precipitation
-            cur.execute(
-                "INSERT INTO Precipitation VALUES (%s, %s, %s, %s)", (row[1], row[4], row[5], row[6])
-            )
-            # Temperature
-            cur.execute(
-                "INSERT INTO Temperature VALUES (%s, %s, %s)", (row[1], row[8], row[9])
-            )
+            insert_str("Weather", row[0], row[1])
+            insert_str("Wind", row[1], row[2] if row[2] != "" else 0)
+            insert_str("Precipitation", row[1], row[4], row[5] if row[5] != "" else 0, row[6])
+            insert_str("Temperature", row[1], row[8], row[9])
             # Wtypes
             wtypes = [row[1]]
             for wtype in row[11:]:
