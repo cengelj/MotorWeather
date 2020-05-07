@@ -49,3 +49,10 @@ After the database is populated, start the application by running `python applic
 ## Project Video
 
 A video of the application in use can be found [here](https://drive.google.com/open?id=16hF0sEipgBjYm-AbRPB1d_qn-TbbSuci).
+
+### Note to Instructor
+
+The NOAA weather data is hosted on Google Drive due to the data being a small portion of a large publicly avaliable dataset from NOAA, which must be downloaded individually using a custom "order".
+The dataset is licensed via the Creative Commons license.  
+
+“Open Data is free public data published by New York City agencies and other partners.”
