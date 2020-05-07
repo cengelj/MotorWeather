@@ -9,7 +9,7 @@ query_options = [
     ("Most common weather", app.most_common_weather),
     ("Most crashed in weather", app.crashes_by_weather),
     ("Deadliest weather", app.deadliest_weather),
-    ("Most injured in weather", app.most_injuries_weather)
+    ("Most Injured In Weather", app.most_injuries_weather)
 ]
 
 
@@ -35,7 +35,7 @@ def main():
     """
     print("Enter the number of the query you would like to execute:")
 
-    printQueryOptions(query_options)
+    print_query_options(query_options)
 
     user_query_selection = ""
 
@@ -44,7 +44,7 @@ def main():
         print()
 
         if user_query_selection == "help":
-            printQueryOptions(query_options)
+            print_query_options(query_options)
             continue
 
         if user_query_selection == "quit":
