@@ -1,22 +1,20 @@
 import psycopg2
 
-
 typecodes = {
-    "WT01": "Fog, ice fog, or freezing fog (may include heavy fog)",
-    "WT02": "Heavy fog or heavy freezing fog (not always distinguished from fog)",
-    "WT03": "Thunder",
-    "WT04": "Ice pellets, sleet, snow pellets, or small hail",
-    "WT06": "Glaze or rime",
-    "WT08": "Smoke or haze",
-    "WT11": "High or damaging winds",
-    "WT13": "Mist",
-    "WT14": "Drizzle",
-    "WT16": "Rain (may include freezing rain, drizzle, and freezing drizzle)",
-    "WT18": "Snow, snow pellets, snow grains, or ice crystals",
-    "WT19": "Unknown source of precipitation",
-    "WT22": "Ice fog or freezing fog"
+    "wt01": "Fog, ice fog, or freezing fog (may include heavy fog)",
+    "wt02": "Heavy fog or heavy freezing fog (not always distinguished from fog)",
+    "wt03": "Thunder",
+    "wt04": "Ice pellets, sleet, snow pellets, or small hail",
+    "wt06": "Glaze or rime",
+    "wt08": "Smoke or haze",
+    "wt11": "High or damaging winds",
+    "wt13": "Mist",
+    "wt14": "Drizzle",
+    "wt16": "Rain (may include freezing rain, drizzle, and freezing drizzle)",
+    "wt18": "Snow, snow pellets, snow grains, or ice crystals",
+    "wt19": "Unknown source of precipitation",
+    "wt22": "Ice fog or freezing fog"
 }
-
 
 
 class Database:
@@ -31,7 +29,6 @@ class Database:
         """
         self._connection = psycopg2.connect(self._connection_string)
 
-    
     def execute_query(self, query, *args):
         """
         Executes the given query with the given arguments on the database
@@ -44,6 +41,22 @@ class Database:
             return cursor.description, cursor.fetchall()
 
 
+    def format_weather_type_result(self, result):
+        formatted_result = []
+        for weather_index in range(len(result[1][0])):
+            formatted_result.append([result[0][weather_index][0], result[1][0][weather_index]])
+
+        formatted_result.sort(key=lambda t: t[1], reverse=True)
+        return formatted_result
+
+
+    def print_formatted_weather_ranking(self, result, describing_noun):
+        current_rank = 1
+        for weather_type in result:
+            print("{}. {}: {} {}".format(current_rank, typecodes[weather_type[0].lower()], weather_type[1], describing_noun))
+            current_rank += 1 # Python depreciating ++ is a disgrace - Your friendly neighborhood python hater
+
+
     def weatherByDate(self):
         date = input("Enter a date (YYYY/MM/DD) to gather the weather data:")
 
@@ -51,23 +64,29 @@ class Database:
         data_query = """
         SELECT maxtemp, mintemp, precip, snow, snowdepth, avgwind
         FROM Temperature, Precipitation, Wind
-        WHERE date = %s
+        WHERE Temperature.date = %s
+        AND Precipitation.date=Temperature.date
+        AND Temperature.date=Wind.date
         """
 
         # Gather weather type data
         weather_type_query = """
-        SELECT * FROM Wtypes
+        SELECT * 
+        FROM Wtypes
         WHERE date = %s
         """
 
         # Various data across tables
         column_names, datapoints = self.execute_query(data_query, date)
+        if len(datapoints)==0:
+            print("Date has no weather data")
+            return
+        datapoints=datapoints[0]
 
         # Weather types table
         column_names, weather_counts = self.execute_query(weather_type_query, date)
         weather_types = [desc[0] for desc in column_names]
         type_with_count = list(zip(weather_types, weather_counts))
-
 
         print("High Temperature (F) {}", datapoints[0])
         print("Low Temperature  (F) {}", datapoints[1])
@@ -83,28 +102,68 @@ class Database:
             if (twc[1]):
                 print("- {}".format(typecodes[twc[0]]))
 
-
     def mostCommonWeather(self):
         # Get the count of the chosen weather type
         query = """
-        SELECT COUNT(%s) FROM Wtypes
-        WHERE %s = 1
+        SELECT SUM(w1.WT01) AS WT01, SUM(w1.WT02) AS WT02, SUM(w1.WT03) AS WT03, SUM(w1.WT04) AS WT04, SUM(w1.WT06) AS WT06, SUM(w1.WT08) AS WT08, SUM(w1.WT11) AS WT11, SUM(w1.WT13) AS WT13, SUM(w1.WT14) AS WT14, SUM(w1.WT16) AS WT16, SUM(w1.WT18) AS WT18, SUM(w1.WT19) AS WT19, SUM(w1.WT22) AS WT22 
+        FROM Wtypes w1;
         """
 
-        results = []
+        # Get result of query
+        result = self.execute_query(query, ())
 
-        # Add each type and its count to results
-        for typecode in typecodes.keys():
-            typecount = self.execute_query(query, (typecode, typecode))[0]
-            results.append((typecode, typecount))
+        # Format result in a form that can be easily sorted
+        formatted_result = []
+        for weather_index in range(len(result[1][0])):
+            formatted_result.append([result[0][weather_index][0],result[1][0][weather_index]])
 
-        results.sort(key=lambda t: t[1], reverse=True)  # Sort by count descending
+        formatted_result.sort(key=lambda t:t[1], reverse=True)
 
         print("Most common weather conditions (descending):")
+        self.print_formatted_weather_ranking(formatted_result, "occurrence(s)")
 
-        # Print rank, description, and count for each weather type
-        currentrank = 1
-        for typecode in results:
-            print("{}. {}: {} occurrences", currentrank, typecodes[typecode[0]], typecode[1])
-            currentrank += 1
+    def crashesByDate(self):
+        print("Selected number of crashes on inputted date")
+        input_date = input("Please enter a date (YYYY/MM/DD): ")
+        result = self.execute_query("SELECT COUNT(id) FROM Crash WHERE \"date\" = %s", input_date)
+        crash_total = result[1][0][0]
+        print("There were " + str(crash_total) + " crashes on the date of " + str(input_date) + ".\n")
 
+
+    def crashesByWeather(self):
+        print("Selected most crashed in weather conditions")
+        query = """
+        SELECT SUM(w1.WT01) AS WT01, SUM(w1.WT02) AS WT02, SUM(w1.WT03) AS WT03, SUM(w1.WT04) AS WT04, SUM(w1.WT06) AS WT06, SUM(w1.WT08) AS WT08, SUM(w1.WT11) AS WT11, SUM(w1.WT13) AS WT13, SUM(w1.WT14) AS WT14, SUM(w1.WT16) AS WT16, SUM(w1.WT18) AS WT18, SUM(w1.WT19) AS WT19, SUM(w1.WT22) AS WT22
+        FROM (SELECT cD.count*w0.WT01 AS WT01, cD.count*w0.WT02 AS WT02, cD.count*w0.WT03 AS WT03, cD.count*w0.WT04 AS WT04, cD.count*w0.WT06 AS WT06, cD.count*w0.WT08 AS WT08, cD.count*w0.WT11 AS WT11, cD.count*w0.WT13 AS WT13, cD.count*w0.WT14 AS WT14, cD.count*w0.WT16 AS WT16, cD.count*w0.WT18 AS WT18, cD.count*w0.WT19 AS WT19, cD.count*w0.WT22 AS WT22  
+                FROM (SELECT c0.date, count(c0.date)
+		        FROM Crash c0
+		        GROUP BY c0.date) AS cD,
+            Wtypes w0
+	    WHERE w0.date=cD.date) AS w1;
+        """
+        result = self.execute_query(query, ())
+        formatted_result = self.format_weather_type_result(result)
+
+        # Print results (descending)
+        print("Most Crashed In Weather Conditions(Descending):")
+        self.print_formatted_weather_ranking(formatted_result, "crash(es)")
+
+
+    def deadliestWeather(self):
+        print("Selected deadliest weather conditions")
+        query = """
+        SELECT SUM(s0.WT01) AS WT01, SUM(s0.WT02) AS WT02, SUM(s0.WT03) AS WT03, SUM(s0.WT04) AS WT04, SUM(s0.WT06) AS WT06, SUM(s0.WT08) AS WT08, SUM(s0.WT11) AS WT11, SUM(s0.WT13) AS WT13, SUM(s0.WT14) AS WT14, SUM(s0.WT16) AS WT16, SUM(s0.WT18) AS WT18, SUM(s0.WT19) AS WT19, SUM(s0.WT22) AS WT22
+        FROM (SELECT deadly_crashes.date, WT01*deadly_crashes.sum AS WT01, WT02*deadly_crashes.sum AS WT02, WT03*deadly_crashes.sum AS WT03, WT04*deadly_crashes.sum AS WT04, WT06*deadly_crashes.sum AS WT06, WT08*deadly_crashes.sum AS WT08, WT11*deadly_crashes.sum AS WT11, WT13*deadly_crashes.sum AS WT13, WT14*deadly_crashes.sum AS WT14, WT16*deadly_crashes.sum AS WT16, WT18*deadly_crashes.sum AS WT18, WT19*deadly_crashes.sum AS WT19, WT22*deadly_crashes.sum AS WT22
+	        FROM (SELECT c0.date, SUM(d0.total)
+		    FROM Crash c0, Deaths d0
+		    WHERE c0.id=d0.id
+		    GROUP BY c0.date) AS deadly_crashes, 
+		    Wtypes t0
+	    WHERE t0.date=deadly_crashes.date) AS s0;
+        """
+        result = self.execute_query(query, ())
+        formatted_result = self.format_weather_type_result(result)
+
+        # Print results (descending)
+        print("Deadliest Weather Conditions(Descending):")
+        self.print_formatted_weather_ranking(formatted_result, "Death(s)")
