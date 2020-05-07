@@ -4,15 +4,16 @@ app = Database()  # Object to interface with the database
 
 # List of query options and their corresponding function objects
 query_options = [
-    ("Crashes by date", app.crashesByDate),
-    ("Weather by date", app.weatherByDate),
-    ("Most common weather", app.mostCommonWeather),
-    ("Most crashed in weather", app.crashesByWeather),
-    ("Deadliest weather", app.deadliestWeather)
+    ("Crashes by date", app.crashes_by_date),
+    ("Weather by date", app.weather_by_date),
+    ("Most common weather", app.most_common_weather),
+    ("Most crashed in weather", app.crashes_by_weather),
+    ("Deadliest weather", app.deadliest_weather),
+    ("Most injured in weather", app.most_injuries_weather)
 ]
 
 
-def printQueryOptions(options):
+def print_query_options(options):
     """
     Prints out numbered list of query options
     options is a list of tuples of the form ("option name", function object)
@@ -48,7 +49,7 @@ def main():
 
         if user_query_selection == "quit":
             continue
-        
+
         try:
             user_query_selection = int(user_query_selection)
         except ValueError:
@@ -61,8 +62,7 @@ def main():
 
         # Execute selected query function
         query_options[user_query_selection - 1][1]()
-        print()
-        print()
+        print("\n")
 
 
 if __name__ == "__main__":
