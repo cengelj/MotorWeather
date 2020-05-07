@@ -1,4 +1,4 @@
-# CSCI-4380 Final Project
+# CSCI-4380 Final Project Spring 2020
 
 ## Contributors
 
@@ -16,7 +16,7 @@ Giri Srinivasan
 
 _Running this software requires [python 3.8+](https://www.python.org/downloads/release/python-382/) and [Postgres 12](https://www.postgresql.org/download/)_
 
-We recommend the use of a python virtual environment. Documentation for that can be found [here](https://docs.python.org/3/library/venv.html).
+We recommend the use of a python virtual environment. Documentation for that can be found [here](https://docs.python.org/3/library/venv.html) .
 
 After creating your virtual environment, install the dependencies by running
 ```bash
@@ -48,7 +48,7 @@ After the database is populated, start the application by running `python applic
 
 ## Project Video
 
-A video of the application in use can be found [here](https://drive.google.com/open?id=16hF0sEipgBjYm-AbRPB1d_qn-TbbSuci).
+A video of the application in use can be found [here](https://drive.google.com/open?id=16hF0sEipgBjYm-AbRPB1d_qn-TbbSuci) .
 
 ### Note to Instructor
 
