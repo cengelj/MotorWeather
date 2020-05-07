@@ -31,11 +31,13 @@ def main():
         current += 1
 
 
-    while (True):
+    user_query_selection = ""
+
+    while (user_query_selection != "quit"):
         user_query_selection = input("\nSelection: ")
 
         if (user_query_selection == "quit"):
-            break
+            continue
 
         if (type(user_query_selection) != int or user_query_selection < 1 or user_query_selection > len(query_options)-1):
             print("Invalid selection.")
