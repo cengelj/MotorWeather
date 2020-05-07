@@ -13,10 +13,11 @@ query_options = [
 ]
 
 
-printQueryOptions(options):
+def printQueryOptions(options):
     """
     Prints out numbered list of query options
     options is a list of tuples of the form ("option name", function object)
+    :return:null
     """
 
     print()
@@ -31,8 +32,8 @@ printQueryOptions(options):
 
 def main():
     """
-    Define 
-    This should not be run until retrieve.py, database.py, and load_data.py (in that order)
+    Print options and execute user selections until quit is entered
+    This should not be run until retrieve_data.py, and load_data.py have been run (in that order)
     :return:null
     """
 
@@ -60,6 +61,7 @@ def main():
         
         # Execute selected query function
         query_options[user_query_selection][1]()
+
 
 
 if __name__ == "__main__":
