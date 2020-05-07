@@ -60,7 +60,7 @@ def main():
             continue
         
         # Execute selected query function
-        query_options[user_query_selection][1]()
+        query_options[user_query_selection-1][1]()
 
 
 
