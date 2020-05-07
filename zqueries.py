@@ -14,6 +14,8 @@ typecodes = {
     "WT22": "Ice fog or freezing fog"
 }
 
+
+
 # --------------------------------------------------------------------------
 # WEATHER CONDITIONS ON GIVEN DAY
 # --------------------------------------------------------------------------
@@ -31,9 +33,9 @@ SELECT * FROM Wtypes
 WHERE date = %s
 """
 
-results = execute_query(query, date)
+columns, results = execute_query(query, date)
 # NEED ACCESS TO CURSOR TO GET COLUMN NAMES
-codes = [desc[0] for desc in cursor.description]
+codes = [desc[0] for desc in columns]
 codevalues = execute_query(query2, date)
 
 codeinfo = list(zip(codes, codevalues))
