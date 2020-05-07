@@ -20,6 +20,6 @@ class Database:
         :param args: The user inputted data to use in place of %s
         :return: The results of the query
         """
-        with self.connection.cursor() as cursor:
+        with self._connection.cursor() as cursor:
             cursor.execute(query, args)
-            return cursor.fetchall()
+            return cursor.description, cursor.fetchall()
