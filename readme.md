@@ -56,3 +56,6 @@ The NOAA weather data is hosted on Google Drive due to the data being a small po
 The dataset is accessible under the Creative Commons license.  
 
 “Open Data is free public data published by New York City agencies and other partners.”
+
+**N.B**: This application was developed in whole on Windows machines. The code herein is fully functional across all windows devices, however the team did not have access to a linux-based operating system to test in a Linux environment. Please reach out to the team at cengejo@gmail.com, girigsrini@gmail.com, darriangardea@gmail.com and allenzallenzallenz2@gmail.com if there is any issues in deployment. 
+
