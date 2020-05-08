@@ -289,7 +289,14 @@ def main() -> None:
     # Working with byte sequences rather than encoded strings reduces CPU effort during memory
     # mapping. However, Windows requires the O_BINARY flag for this, whereas POSIX doesn't have it
     # at all.
-    open_flags = os.O_RDONLY | os.O_BINARY if hasattr(os, "O_BINARY") else os.O_RDONLY
+    if hasattr(os, "O_BINARY"):
+        open_flags = os.O_RDONLY | os.O_BINARY
+        if DEBUG:
+            print("<DEBUG>The O_BINARY flag IS PRESENT on this system (Windows)")
+    else:
+        open_flags = os.O_RDONLY
+        if DEBUG:
+            print("<DEBUG>The O_BINARY flag IS NOT PRESENT on this system (not Windows)")
 
     # Used to safely insert data into tables
     conn = psycopg2.connect("host='localhost' dbname='dbms_final_project' user='dbms_project_user' "
@@ -329,7 +336,7 @@ def main() -> None:
 
     print()
     collision_data = data_dir.joinpath("Motor_Vehicle_Collisions_-_Crashes.csv")
-    if not weather_data.exists():
+    if not collision_data.exists():
         print(f"ERROR: Data file \"{str(collision_data)}\" does not exist!", file = sys.stderr)
         sys.exit(1)
     print("### Importing collision data ###")
